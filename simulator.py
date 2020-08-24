@@ -19,11 +19,6 @@ class BitcoinNetworkSimulator:
     for i in range(self.num_selfish_nodes):
       self.nodes.append(SelfishNode(i + self.num_honest_nodes))
 
-  def broadcast(self, block):
-    # ブロックを総てのノードに配布する
-    for node in self.nodes:
-      node.get_block(block)
-
   def generate_block(self, num_blocks):
     # ブロックをnum_blocks個生成し、生成したマイナーをランダムに決める
     # ブロックをいきなりbroadcastせず、init後にキューに入れる。こうするとブロックのheightが同じになる
@@ -36,7 +31,8 @@ class BitcoinNetworkSimulator:
       block_queue.append(block)
 
     for block in block_queue:
-      self.broadcast(block)
+      # 広告はノードにやらせる
+      self.nodes[block.miner].broadcast(block, self.nodes)
 
   def execute_simulation(self):
     # シミュレーションの実行

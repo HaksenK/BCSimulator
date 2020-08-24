@@ -11,6 +11,10 @@ class Node:
     block.height = self.chain.last.height + 1
     return block
 
+  def broadcast(self, block, nodes):
+    for node in nodes:
+      node.get_block(block)
+
   def get_block(self, block):
     self.chain.add(block)
 
@@ -20,3 +24,4 @@ class SelfishNode(Node):
     super().__init__()
     self.local_chain = Chain()
     self.is_selfish = True
+    self.has_local_chain = False

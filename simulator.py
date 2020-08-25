@@ -10,14 +10,19 @@ class BitcoinNetworkSimulator:
     self.gamma = 0.5
     self.simulation_period = 60 * 24 # minutes
 
-    self.nodes = []
+    self.honest_node = Node()
+    self.selfish_node = SelfishNode()
     self.num_generated_blocks = rd.poisson(0.1, self.simulation_period) #1分に0.1ブロック
     self.latest_block_id = 0 # 総てのブロックの中で最新のもの
 
-    for i in range(self.num_honest_nodes):
-      self.nodes.append(Node(i))
-    for i in range(self.num_selfish_nodes):
-      self.nodes.append(SelfishNode(i + self.num_honest_nodes))
+  def node_of_index(self, n):
+    # 配列にnum_honest_nodes+num_selfish_nodes個のブロックを入れると、別のインスタンスになっている模様。この函数で擬似的な配列を作る
+    if n < self.num_honest_nodes:
+      return self.honest_node
+    elif n < self.num_selfish_nodes:
+      return self.selfish_node
+    else:
+      return None
 
   def generate_block(self, num_blocks):
     # ブロックをnum_blocks個生成し、生成したマイナーをランダムに決める
@@ -27,12 +32,12 @@ class BitcoinNetworkSimulator:
       self.latest_block_id += 1
       miner_index = rd.randint(0, self.num_honest_nodes + self.num_selfish_nodes)
       b = Block(self.latest_block_id, miner_index)
-      block = self.nodes[miner_index].init_block(b)
+      block = self.node_of_index(miner_index).init_block(b)
       block_queue.append(block)
 
     for block in block_queue:
       # 広告はノードにやらせる
-      self.nodes[block.miner].broadcast(block, self.nodes)
+      self.node_of_index(block.miner).broadcast(block, [self.honest_node, self.selfish_node])
 
   def execute_simulation(self):
     # シミュレーションの実行
@@ -40,19 +45,19 @@ class BitcoinNetworkSimulator:
       self.generate_block(i)
 
   def show_rewards(self):
-    current_block = self.nodes[0].chain.last
+    current_block = self.node_of_index(0).chain.last
     rewards = [0] * (self.num_honest_nodes + self.num_selfish_nodes)
     while(current_block.height > 0):
       rewards[current_block.miner] += 1
       current_block = current_block.parent
     for i, reward in enumerate(rewards):
-      if self.nodes[i].is_selfish:
+      if self.node_of_index(i).is_selfish:
         print(f'Selfish miner {i}: reward {reward}')
       else:
         print(f'Honest miner {i}: reward {reward}')
 
   def show_all_blocks(self):
-    chain = self.nodes[0].chain.blocks
+    chain = self.node_of_index(0).chain.blocks
     for b in chain:
       print(f'block id: {b.id}')
       print(f'miner: {b.miner}')
@@ -61,6 +66,17 @@ class BitcoinNetworkSimulator:
       print(f'height: {b.height}')
       print()
 
+  def show_R_pool(self):
+    r_pool = 0
+    r_others = 0
+    chain = self.node_of_index(0).chain.blocks
+    while(current_block.height > 0):
+      if(node_of_index(current_block.miner).is_selfish):
+        r_pool += 1
+      else:
+        r_others += 1
+      current_block = current_block.parent
+    return r_pool / (r_pool + r_others)
 
 if __name__ == '__main__':
   simulator = BitcoinNetworkSimulator()

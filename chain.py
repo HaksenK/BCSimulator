@@ -18,8 +18,10 @@ class Chain:
     self.blocks = [self.last]
     self.is_in_competition = False
 
+  def __getitem__(self, x):
+    return self.blocks[x]
+
   def add(self, block):
     self.blocks.append(block)
     if(block.height > self.last.height):
       self.last = block
-

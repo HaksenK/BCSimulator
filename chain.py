@@ -21,7 +21,13 @@ class Chain:
   def __getitem__(self, x):
     return self.blocks[x]
 
+  def __delitem__(self, val):
+    del self.blocks[val]
+
   def add(self, block):
     self.blocks.append(block)
     if(block.height > self.last.height):
       self.last = block
+
+  def pop(self, index):
+    return self.blocks.pop(index)

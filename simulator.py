@@ -5,10 +5,11 @@ from node import *
 class BitcoinNetworkSimulator:
   def __init__(self):
     # ネットワーク全体のパラメタ
-    self.num_honest_nodes = 100
-    self.num_selfish_nodes = 0
+    self.num_honest_nodes = 90
+    self.num_selfish_nodes = 10
     self.gamma = 0.5
-    self.simulation_period = 60 * 24 # minutes
+#    self.simulation_period = 60 * 24 # minutes
+    self.simulation_period = 100 # minutes
 
     self.honest_node = Node()
     self.selfish_node = SelfishNode()
@@ -19,7 +20,7 @@ class BitcoinNetworkSimulator:
     # 配列にnum_honest_nodes+num_selfish_nodes個のブロックを入れると、別のインスタンスになっている模様。この函数で擬似的な配列を作る
     if n < self.num_honest_nodes:
       return self.honest_node
-    elif n < self.num_selfish_nodes:
+    elif n < self.num_honest_nodes + self.num_selfish_nodes:
       return self.selfish_node
     else:
       return None
@@ -81,5 +82,5 @@ class BitcoinNetworkSimulator:
 if __name__ == '__main__':
   simulator = BitcoinNetworkSimulator()
   simulator.execute_simulation()
-#  simulator.show_all_blocks()
+  simulator.show_all_blocks()
   simulator.show_rewards()

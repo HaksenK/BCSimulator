@@ -12,11 +12,13 @@ class Node:
 
   def broadcast(self, block, nodes):
     for node in nodes:
-      node.get_block(block)
+      node.get_block(block, nodes)
 
-  def get_block(self, block):
+  def get_block(self, block, nodes):
     self.chain.add(block)
 
+  def get_block_called_by_selfish(self, block, nodes):
+    self.chain.add(block)
 
 class SelfishNode(Node):
   def __init__(self):
@@ -33,26 +35,29 @@ class SelfishNode(Node):
       block.height = self.local_chain.last.height + 1
       return block
 
-  def broadcast(self, block):
+  def broadcast(self, block, nodes):
     # ブロックを広告せずに貯める
     self.local_chain.add(block)
     self.num_forward_blocks += 1
 
-  def genuinely_broadcast(self, block):
-    for node in self.nodes:
-      node.get_block(block)
+  def genuinely_broadcast(self, block, nodes):
+    for node in nodes:
+      node.get_block_called_by_selfish(block, nodes)
 
-  def get_block(self, block):
-    super().get_block(block)
+  def get_block(self, block, nodes):
+    super().get_block(block, nodes)
 
     # セルフィッシュマイナーが1個か2個リードしているなら総て広告
     if self.num_forward_blocks in [1, 2]:
       for b in self.local_chain[1:]:
-        super().broadcast(b)
+        self.genuinely_broadcast(b, nodes)
       self.num_forward_blocks = 0
       del self.local_chain[1:]
 
     # 3個以上リードしているなら一つだけ広告
     elif self.num_forward_blocks > 2:
-      super().broadcast(self.num_forward_blocks.pop(1))
+      self.genuinely_broadcast(self.local_chain.pop(1), nodes)
       self.num_forward_blocks -= 1
+
+  def get_block_called_by_selfish(self, block, nodes):
+    self.chain.add(block)

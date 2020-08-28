@@ -7,8 +7,7 @@ class BitcoinNetworkSimulator:
    # ネットワーク全体のパラメタ
     self.num_honest_nodes = num_honest_nodes
     self.num_selfish_nodes = num_selfish_nodes
-#    self.simulation_period = 60 * 24 # minutes
-    self.simulation_period = 100 # minutes
+    self.simulation_period = 60 * 24 # minutes
 
     self.honest_node = Node(gamma)
     self.selfish_node = SelfishNode(gamma)
@@ -73,9 +72,9 @@ class BitcoinNetworkSimulator:
   def show_R_pool(self):
     r_pool = 0
     r_others = 0
-    chain = self.node_of_index(0).chain.blocks
+    current_block = self.node_of_index(0).chain.last
     while(current_block.height > 0):
-      if(node_of_index(current_block.miner).is_selfish):
+      if(self.node_of_index(current_block.miner).is_selfish):
         r_pool += 1
       else:
         r_others += 1
@@ -87,3 +86,4 @@ if __name__ == '__main__':
   simulator.execute_simulation()
   simulator.show_all_blocks()
   simulator.show_rewards()
+  print(simulator.show_R_pool())

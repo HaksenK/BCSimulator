@@ -1,6 +1,7 @@
 # グラフをプロットする。BitcoinNetworkSimulatorを様々な条件で呼び出して、R_poolを記録してプロット。
 import numpy as np
 import matplotlib.pyplot as plt
+from node import *
 from simulator import *
 
 # 一つの条件で何回か繰り返す
@@ -17,7 +18,7 @@ ax.set_ylim([0, 1])
 for gamma, color in zip([0, 0.5, 1], ['red', 'green', 'blue']):
   R_pools = []
   for alpha in [a/1000 for a in range(500)]:
-    simulator = BitcoinNetworkSimulator(int(1000*(1-alpha)), int(1000*alpha), gamma)
+    simulator = BitcoinNetworkSimulator(SelfishNode, int(1000*(1-alpha)), int(1000*alpha), gamma)
     aver_sum = 0
     for i in range(ITERATION_NUM):
       simulator.execute_simulation()

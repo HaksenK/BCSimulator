@@ -3,14 +3,14 @@ from chain import *
 from node import *
 
 class BitcoinNetworkSimulator:
-  def __init__(self, num_honest_nodes, num_selfish_nodes, gamma):
+  def __init__(self, selfish_node_constructor, num_honest_nodes, num_selfish_nodes, gamma):
    # ネットワーク全体のパラメタ
     self.num_honest_nodes = num_honest_nodes
     self.num_selfish_nodes = num_selfish_nodes
     self.simulation_period = 60 * 24 # minutes
 
     self.honest_node = Node(gamma)
-    self.selfish_node = SelfishNode(gamma)
+    self.selfish_node = selfish_node_constructor(gamma)
     self.num_generated_blocks = rd.poisson(0.1, self.simulation_period) #1分に0.1ブロック
     self.latest_block_id = 0 # 総てのブロックの中で最新のもの
 
@@ -82,7 +82,7 @@ class BitcoinNetworkSimulator:
     return r_pool / (r_pool + r_others)
 
 if __name__ == '__main__':
-  simulator = BitcoinNetworkSimulator(50, 50, 0.5)
+  simulator = BitcoinNetworkSimulator(SelfishNode, 50, 50, 0.5)
   simulator.execute_simulation()
   simulator.show_all_blocks()
   simulator.show_rewards()

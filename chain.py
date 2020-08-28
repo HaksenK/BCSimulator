@@ -24,6 +24,10 @@ class Chain:
   def __delitem__(self, val):
     del self.blocks[val]
 
+  def __del__(self):
+    for b in self.blocks:
+      del b
+
   def add(self, block):
     self.blocks.append(block)
     # 新たなブロックの高さが元のチェーンの高さ超過ならばlastを更新

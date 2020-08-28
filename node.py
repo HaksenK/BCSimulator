@@ -7,6 +7,9 @@ class Node:
     self.is_selfish = False
     self.gamma = gamma
 
+  def __del__(self):
+    del self.chain
+
   def init_block(self, block):
     block.parent = self.chain.last
     block.height = self.chain.last.height + 1
@@ -31,6 +34,10 @@ class SelfishNode(Node):
     self.local_chain = Chain()
     self.is_selfish = True
     self.num_forward_blocks = 0
+
+  def __del__(self):
+    del self.chain
+    del self.local_chain
 
   def init_block(self, block):
     if self.num_forward_blocks == 0:

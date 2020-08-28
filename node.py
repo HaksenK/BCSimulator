@@ -1,9 +1,11 @@
+import random
 from chain import *
 
 class Node:
-  def __init__(self):
+  def __init__(self, gamma):
     self.chain = Chain()
     self.is_selfish = False
+    self.gamma = gamma
 
   def init_block(self, block):
     block.parent = self.chain.last
@@ -19,10 +21,13 @@ class Node:
 
   def get_block_called_by_selfish(self, block, nodes):
     self.chain.add(block)
+    if self.chain.last.height == block.height and random.random() < self.gamma:
+      self.chain.last = block
+
 
 class SelfishNode(Node):
-  def __init__(self):
-    super().__init__()
+  def __init__(self, gamma):
+    super().__init__(gamma)
     self.local_chain = Chain()
     self.is_selfish = True
     self.num_forward_blocks = 0
@@ -61,3 +66,6 @@ class SelfishNode(Node):
 
   def get_block_called_by_selfish(self, block, nodes):
     self.chain.add(block)
+    # chainだと新しいブロックの高さが元のチェーンの高さを超えないとlastを更新しない。selfish由来のブロックならチェーンと同じ高さでも優先する
+    if self.chain.last.height == block.height:
+      self.chain.last = block

@@ -26,6 +26,7 @@ class Chain:
 
   def add(self, block):
     self.blocks.append(block)
+    # 新たなブロックの高さが元のチェーンの高さ超過ならばlastを更新
     if(block.height > self.last.height):
       self.last = block
 

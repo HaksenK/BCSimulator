@@ -2,9 +2,9 @@ import random
 from chain import *
 
 class Node:
-  def __init__(self, gamma):
+  def __init__(self, gamma, is_selfish):
     self.chain = Chain()
-    self.is_selfish = False
+    self.is_selfish = is_selfish
     self.gamma = gamma
 
   def __del__(self):
@@ -29,10 +29,9 @@ class Node:
 
 
 class SelfishNode(Node):
-  def __init__(self, gamma):
-    super().__init__(gamma)
+  def __init__(self, gamma, is_selfish=True):
+    super().__init__(gamma, is_selfish)
     self.local_chain = Chain()
-    self.is_selfish = True
     self.num_forward_blocks = 0
 
   def __del__(self):

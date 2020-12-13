@@ -9,8 +9,8 @@ class BitcoinNetworkSimulator:
     self.num_selfish_nodes = num_selfish_nodes
     self.simulation_period = 60 * 24 # minutes
 
-    self.honest_node = Node(gamma)
-    self.selfish_node = selfish_node_constructor(gamma)
+    self.honest_node = Node(gamma, False)
+    self.selfish_node = selfish_node_constructor(gamma, True)
     self.num_generated_blocks = rd.poisson(0.1, self.simulation_period) #1分に0.1ブロック
     self.latest_block_id = 0 # 総てのブロックの中で最新のもの
 

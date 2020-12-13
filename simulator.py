@@ -8,10 +8,10 @@ class BitcoinNetworkSimulator:
     self.num_honest_nodes = num_honest_nodes
     self.num_selfish_nodes = num_selfish_nodes
     self.simulation_period = 60 * 24 # minutes
+#    self.simulation_period = 200 # minutes
 
     self.honest_node = Node(gamma, False)
     self.selfish_node = selfish_node_constructor(gamma, True)
-    self.num_generated_blocks = rd.poisson(0.1, self.simulation_period) #1分に0.1ブロック
     self.latest_block_id = 0 # 総てのブロックの中で最新のもの
 
   def __del__(self):
@@ -44,8 +44,9 @@ class BitcoinNetworkSimulator:
 
   def execute_simulation(self):
     # シミュレーションの実行
-    for i in self.num_generated_blocks:
+    for i in rd.poisson(0.1, self.simulation_period): #1分に0.1ブロック
       self.generate_block(i)
+    self.selfish_node.broadcast_all_left([self.honest_node, self.selfish_node])
 
   def show_rewards(self):
     current_block = self.node_of_index(0).chain.last
@@ -82,7 +83,7 @@ class BitcoinNetworkSimulator:
     return r_pool / (r_pool + r_others)
 
 if __name__ == '__main__':
-  simulator = BitcoinNetworkSimulator(SelfishNode, 50, 50, 0.5)
+  simulator = BitcoinNetworkSimulator(SelfishNode, 10, 10, 0.5)
   simulator.execute_simulation()
   simulator.show_all_blocks()
   simulator.show_rewards()

@@ -1,13 +1,16 @@
 import numpy.random as rd
 from chain import *
-from node import *
+#from node import *
+from node_in_2_1_oracle_chain import *
 
 class BitcoinNetworkSimulator:
   def __init__(self, selfish_node_constructor, num_honest_nodes, num_selfish_nodes, gamma):
    # ネットワーク全体のパラメタ
     self.num_honest_nodes = num_honest_nodes
     self.num_selfish_nodes = num_selfish_nodes
-    self.simulation_period = 60 * 24 # minutes
+#    self.simulation_period = 60 * 24 * 180# minutes
+    self.simulation_period = 60 * 24 * 30# minutes
+#    self.simulation_period = 60 * 24 # minutes
 #    self.simulation_period = 200 # minutes
 
     self.honest_node = Node(gamma, False)
@@ -36,7 +39,13 @@ class BitcoinNetworkSimulator:
       miner_index = rd.randint(0, self.num_honest_nodes + self.num_selfish_nodes)
       b = Block(self.latest_block_id, miner_index)
       block = self.node_of_index(miner_index).init_block(b)
+#      print(block.id)
+#      print(block.miner)
+#      print(block.parent.id)
+#      print(block.height)
+#      print("\n")
       block_queue.append(block)
+#    if block_queue: print("\n")
 
     for block in block_queue:
       # 広告はノードにやらせる

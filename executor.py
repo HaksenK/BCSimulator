@@ -10,7 +10,8 @@ data = pd.DataFrame()
 data['alpha'] = [a/1000 for a in range(500)]
 
 # 一つの条件で何回か繰り返す
-ITERATION_NUM = 100
+#ITERATION_NUM = 100
+ITERATION_NUM = 20
 
 # Selfishノードがhonestと同じ動きをした場合の結果
 R_pools_all_honest = []

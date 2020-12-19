@@ -1,3 +1,5 @@
+import copy
+
 class Block:
   def __init__(self, num, miner):
     self.parent = None
@@ -36,3 +38,7 @@ class Chain:
 
   def pop(self, index):
     return self.blocks.pop(index)
+
+  def copy(self, cpyfrom):
+    self.blocks = copy.copy(cpyfrom)
+    self.last = cpyfrom.last

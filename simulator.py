@@ -1,7 +1,7 @@
 import numpy.random as rd
 from chain import *
 #from node import *
-from node_in_2_1_oracle_chain import *
+from node_in_2_2_oracle_chain import *
 
 class BitcoinNetworkSimulator:
   def __init__(self, selfish_node_constructor, num_honest_nodes, num_selfish_nodes, gamma):
@@ -39,13 +39,7 @@ class BitcoinNetworkSimulator:
       miner_index = rd.randint(0, self.num_honest_nodes + self.num_selfish_nodes)
       b = Block(self.latest_block_id, miner_index)
       block = self.node_of_index(miner_index).init_block(b)
-#      print(block.id)
-#      print(block.miner)
-#      print(block.parent.id)
-#      print(block.height)
-#      print("\n")
       block_queue.append(block)
-#    if block_queue: print("\n")
 
     for block in block_queue:
       # 広告はノードにやらせる
@@ -68,6 +62,16 @@ class BitcoinNetworkSimulator:
         print(f'Selfish miner {i}: reward {reward}')
       else:
         print(f'Honest miner {i}: reward {reward}')
+
+  def show_num_blocks(self):
+    num_blocks = [0] * (self.num_honest_nodes + self.num_selfish_nodes)
+    for b in self.node_of_index(0).chain.blocks[1:]:
+      num_blocks[b.miner] += 1
+    for i, num_block in enumerate(num_blocks):
+      if self.node_of_index(i).is_selfish:
+        print(f'Selfish miner {i}: num_block {num_block}')
+      else:
+        print(f'Honest miner {i}: num_block {num_block}')
 
   def show_all_blocks(self):
     chain = self.node_of_index(0).chain.blocks
@@ -92,8 +96,9 @@ class BitcoinNetworkSimulator:
     return r_pool / (r_pool + r_others)
 
 if __name__ == '__main__':
-  simulator = BitcoinNetworkSimulator(SelfishNode, 10, 10, 0.5)
+  simulator = BitcoinNetworkSimulator(SelfishNode, 10, 5, 0.5)
   simulator.execute_simulation()
   simulator.show_all_blocks()
   simulator.show_rewards()
+  simulator.show_num_blocks()
   print(simulator.show_R_pool())
